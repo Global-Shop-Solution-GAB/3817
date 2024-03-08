@@ -1,0 +1,699 @@
+Program.Sub.ScreenSU.Start
+Gui.Form..create
+Gui.Form..caption("Work Order Action Required -- Multi Part")
+Gui.Form..size(20310,10965)
+Gui.Form..minx(0)
+Gui.Form..miny(0)
+Gui.Form..position(0,0)
+Gui.Form..event(UnLoad,form_unload)
+Gui.Form..alwaysontop(False)
+Gui.Form..fontname("Arial")
+Gui.Form..fontsize(8)
+Gui.Form..forecolor(0)
+Gui.Form..fontstyle(,,)
+Gui.Form..BackColor(-2147483633)
+Gui.Form..controlbox(True)
+Gui.Form..maxbutton(False)
+Gui.Form..minbutton(True)
+Gui.Form..mousepointer(0)
+Gui.Form..moveable(True)
+Gui.Form..sizeable(False)
+Gui.Form..ShowInTaskBar(True)
+Gui.Form..titlebar(True)
+Gui.Form.fgData.create(gsflexgrid)
+Gui.Form.fgData.FixedRows(0)
+Gui.Form.fgData.FixedCols(0)
+Gui.Form.fgData.visible(True)
+Gui.Form.fgData.size(19725,9390)
+Gui.Form.fgData.zorder(0)
+Gui.Form.fgData.position(100,200)
+Gui.Form.fgData.enabled(True)
+Gui.Form.fgData.event(MouseUp,fgdata_mouseup)
+Gui.Form.fgData.event(CheckClick,fgdata_checkclick)
+Gui.Form.txtDueDateDiff.create(textbox,"",True,1620,300,0,100,9880,True,0,Arial,8,-2147483643,1)
+Gui.Form.txtDueDateDiff.numericonly(2)
+Gui.Form.txtDueDateDiff.defaultvalue("")
+Gui.Form.txtDueDateDiff.controlgroup(0)
+Gui.Form.lbl1.create(label,"Due Date Difference",True,1935,255,1,100,9630,True,0,Arial,8,-2147483633,0)
+Gui.Form.lbl1.defaultvalue("")
+Gui.Form.lbl1.controlgroup(0)
+Gui.Form.cmdRefresh.create(button)
+Gui.Form.cmdRefresh.caption("Refresh")
+Gui.Form.cmdRefresh.visible(True)
+Gui.Form.cmdRefresh.size(1305,375)
+Gui.Form.cmdRefresh.zorder(0)
+Gui.Form.cmdRefresh.position(1800,9855)
+Gui.Form.cmdRefresh.enabled(True)
+Gui.Form.cmdRefresh.fontname("Arial")
+Gui.Form.cmdRefresh.fontsize(8)
+Gui.Form.cmdRefresh.event(Click,cmdrefresh_click)
+Gui.Form.cmdRefresh.defaultvalue("")
+Gui.Form.cmdRefresh.controlgroup(0)
+Gui.Form.cmdReschedule.create(button)
+Gui.Form.cmdReschedule.caption("Reschedule")
+Gui.Form.cmdReschedule.visible(True)
+Gui.Form.cmdReschedule.size(1305,375)
+Gui.Form.cmdReschedule.zorder(0)
+Gui.Form.cmdReschedule.position(3195,9855)
+Gui.Form.cmdReschedule.enabled(True)
+Gui.Form.cmdReschedule.fontname("Arial")
+Gui.Form.cmdReschedule.fontsize(8)
+Gui.Form.cmdReschedule.event(Click,cmdreschedule_click)
+Gui.Form.cmdReschedule.defaultvalue("")
+Gui.Form.cmdReschedule.controlgroup(0)
+Gui.Form.cmdExport.Create(Button)
+Gui.Form.cmdExport.Size(1305,375)
+Gui.Form.cmdExport.Position(4605,9855)
+Gui.Form.cmdExport.Caption("Export")
+Gui.Form.cmdExport.Event(Click,cmdExport_Click)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+Variable.UDT.uGrid.Define("Sched",Long,)
+Variable.UDT.uGrid.Define("Part",String,Part)
+Variable.UDT.uGrid.Define("Location",String,Location)
+Variable.UDT.uGrid.Define("WO",String,WO)
+Variable.UDT.uGrid.Define("Qty",String,Qty)
+Variable.UDT.uGrid.Define("Date_Due",Date,Date_Due)
+Variable.UDT.uGrid.Define("Order_NO",String,Order_NO)
+Variable.UDT.uGrid.Define("Qty_BO",Float,QTY_BO)
+Variable.UDT.uGrid.Define("Date_Item_Prom",Date,Date_Item_Prom)
+Variable.UDT.uGrid.Define("Qty_Change",Float,Qty_Change)
+Variable.UDT.uGrid.Define("Date_CHange",Float,)
+Variable.UDT.uGrid.Define("Labor",String,Labor)
+Variable.UDT.uGrid.Define("Qty_OnHand",Float,Qty_OnHand)
+Variable.UDT.uGrid.Define("Qty_OnOrder_WO",Float,Qty_OnOrder_WO)
+Variable.UDT.uGrid.Define("Qty_Required",Float,Qty_Required)
+Variable.uGlobal.uGrid.Declare("uGrid")
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+F.ODBC.Connection!conX.OpenConnection(v.Ambient.PDSN,v.Ambient.PUser,v.Ambient.PPass,1500)
+v.uGlobal.uGrid.Redim(-1,-1)
+f.Intrinsic.UI.InvokeWaitDialog("Loading...")
+Function.Intrinsic.Control.CallSub(buildstyle)
+Function.Intrinsic.Control.CallSub(initial_load)
+f.Intrinsic.UI.CloseWaitDialog 
+Gui.Form..Show
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	Function.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.Form_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+F.ODBC.Connection!conX.Close
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	Function.Intrinsic.Control.End
+
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Form_UnLoad.End
+
+Program.Sub.cmdRefresh_Click.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.iDateDifference.Declare(Long) 
+v.Local.iC.Declare(Long)
+v.Local.dNewDate.Declare(Date)
+v.Local.iTemp.Declare(Long) 
+v.Local.bRemove.Declare(Boolean)
+
+
+F.Intrinsic.Control.If(v.Screen.Form!txtDueDateDiff.Text.trim,=,"") 
+	f.Intrinsic.UI.Msgbox("Date Differerence can not be blank.") 
+	GUi.Form.txtDueDateDiff.SetFocus
+	f.Intrinsic.Control.ExitSub 
+f.Intrinsic.Control.endif
+
+f.Intrinsic.Control.BlockEvents
+
+v.Local.iDateDifference.Set(v.Screen.Form!txtDueDateDiff.Text) 
+
+
+'Once the User has put in a number in the text box Due Date difference field and they press the Refresh button you will add the value to the WO Due date in the UDT
+'If the future date is not equal to SO Date then keep the line
+'Also check to make sure that the WO Qty is not greater than SO Qty
+'If WO Qty is greater than SO Qty then allow the line to stay visible.
+'Loop through the UDT and find the date difference from the future date and the SO Date and add it to the Date change field.
+F.Intrinsic.Control.For(v.Local.ic,0,v.uGlobal.uGrid.UBound,1) 
+	'add the date diff value to our wo due date 
+	f.Intrinsic.Date.DateAdd("D",v.Local.iDateDifference,v.uGlobal.uGrid(v.Local.iC)!Date_Due,v.Local.dNewDate) 
+
+	'if the new date and the sales order date are the same get rid of the line. 
+	F.Intrinsic.Control.If(v.Local.dNewDate,=,v.uGlobal.uGrid(v.Local.ic)!Date_Item_Prom) 
+		'no pass 
+		v.Local.bRemove.Set(True)
+		
+	Function.Intrinsic.Control.Else 
+		'means continue. 
+		v.Local.bRemove.Set(False)
+	f.Intrinsic.Control.endif
+	
+	'is work order wo qty greater than so qty, if so keep that mess in there even if we have it to be removed
+	F.Intrinsic.Control.if(v.uGlobal.ugrid(v.Local.iC)!Qty,>,v.uGlobal.uGrid(v.Local.iC)!Qty_BO)
+		v.Local.bRemove.Set(False)
+	Function.Intrinsic.Control.EndIf
+	
+	Function.Intrinsic.Control.If(v.Local.bRemove,=,True) 
+		'flag udt ordinal for deletion 
+		f.Intrinsic.Variable.UDTFlagOrdinal(v.uGlobal.uGrid,True,v.Local.iC)
+	Function.Intrinsic.Control.Else 
+		'find difference from the future date and the SO Date and add it to the Date change field within the udt
+		F.Intrinsic.Date.DateDiff("D",v.Local.dNewDate,v.uGlobal.uGrid(v.Local.iC)!Date_Item_Prom,v.Local.iTemp) 
+		'set it to our udt
+		v.uGlobal.uGrid(v.Local.iC)!Date_CHange.set(v.Local.iTemp)
+	Function.Intrinsic.Control.EndIf
+F.Intrinsic.Control.Next(v.Local.ic)
+
+'flag udt elements for deletion 
+f.Intrinsic.Variable.UDTDeleteFlagged(v.uGlobal.uGrid) 
+
+'reload our grid information from our udt 
+Gui.Form.fgData.Visible(False) 
+'the function isn't clearing out the grid porperly have to do this 
+Gui.Form.fgData.Rows(1)
+Gui.Form.fgData.Rows(2)
+Gui.Form.fgData.FixedRows(1)
+Gui.Form.fgData.LoadFromUDT("v.uglobal.uGrid","Sched::0*!*Part::1*!*Location::2*!*WO::3*!*QTY::4*!*Date_DUE::5*!*ORDER_NO::6*!*QTY_BO::7*!*Date_Item_PROM::8*!*QTY_CHANGE::9*!*Date_Change::10*!*Labor::11*!*Qty_ONHAND::12*!*QTY_ONORDER_WO::13*!*QTY_REQUIRED::14",2) 
+'default all checked to 0 
+'f.Intrinsic.Variable.UDTSetMemberValue(v.uGlobal.uGrid!Sched,"0")
+
+gui.Form.fgData.Visible(True)
+
+Function.Intrinsic.Control.UnBlockEvents
+ 
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	Function.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdRefresh_Click.End
+
+Program.Sub.cmdReschedule_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdRefresh_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sRet.Declare(String) 
+v.Local.sSQL.Declare(String) 
+v.Local.sParam.Declare(String) 
+v.Local.iC.Declare(Long) 
+v.Local.sWO.Declare(String)
+v.Local.sSchedDir.Declare(String)
+v.Local.dNewDueDate.Declare(Date)
+v.Local.dStart.Declare(Date)
+v.Local.bRePop.Declare(Boolean,False)
+
+'get the checked values. 
+f.Intrinsic.Variable.UDTMultiSeek(v.uGlobal.uGrid!Sched,1,v.Local.sRet) 
+F.Intrinsic.Control.If(v.Local.sret.Trim,=,"")
+	'no jobs selected for reschedule
+	f.Intrinsic.Control.ExitSub 
+Function.Intrinsic.Control.Else 
+	f.Intrinsic.Control.BlockEvents 
+	'Loop Throuh all Jobs that are marked as rescheduled. 
+	f.Intrinsic.String.Split(v.Local.sRet,"*!*",v.Local.sRet)
+	
+
+
+
+
+	F.Intrinsic.Control.For(v.Local.ic,0,v.Local.sRet.UBound,1)
+		f.Intrinsic.UI.InvokeWaitDialog("Rescheduling Selected Jobs...") 
+		'First Get Sched Direction From Work Order header table. 
+		'split work order on the - since that's how it's being stored/displayed within the grid
+		f.Intrinsic.String.Split(v.uGlobal.uGrid(v.Local.sRet(v.Local.iC))!WO,"-",v.Local.sWO)
+		F.Intrinsic.String.Build("Select Date_Start,Schedule_DIR From V_JOB_HEADER WHERE Job = '{0}' And Suffix = '{1}'",v.Local.sWO(0).Trim,v.Local.sWO(1).Trim,v.Local.sSQL)
+		f.ODBC.Connection!conX.OpenLocalRecordsetRO("rst",v.Local.sSQL)
+		f.Intrinsic.Control.If(v.ODBC.conX!rst.EOF,<>,True) 
+			f.Intrinsic.Control.SelectCase(v.ODBC.conX!rst.FieldValTrim!Schedule_Dir)
+				f.Intrinsic.Control.Case(0)
+					'forward schedule flage
+					v.Local.sSchedDir.Set("F")
+				f.Intrinsic.Control.Case(1)
+					'backward schedule flag
+					v.Local.sSchedDir.Set("B")
+				f.Intrinsic.Control.Case(2) 
+					'schedule from selected sequence
+					v.Local.sSchedDir.Set("H")
+				Function.Intrinsic.Control.CaseElse
+					'assume backwrd? 
+					v.Local.sSchedDir.Set("B")
+			Function.Intrinsic.Control.EndSelect
+			
+			'get start date as well
+			v.Local.dStart.Set(v.ODBC.conX!rst.FieldVal!Date_Start)
+			
+			'calc new due date based off of original job due date, then adding in the date_Change value
+			f.Intrinsic.Date.DateAdd("D",v.uGlobal.ugrid(v.Local.sRet(v.Local.iC))!Date_CHange,v.uGlobal.uGrid(v.local.sreT(v.Local.iC))!Date_Due,v.Local.dNewDueDate)
+
+			'Format Params for Callwrapper 500030
+			'stat date!*!duedate!*!WorkOrder!*!suffix!*!SEQ!*!ScheduleDIR
+			'Problem is that we don't know what sequence to schedule from? cause they have to select it.
+			'forum says originally date format should be yymmdd but user posts mmddyy as valid
+			f.Intrinsic.String.Build("{0}!*!{1}!*!{2}!*!{3}!*!{4}!*!{5}",v.Local.dStart.formatMMDDYY,v.Local.dNewDueDate.FormatMMDDYY,v.Local.sWO(0).Trim,v.Local.sWO(1).Trim,"",v.Local.sSchedDir,v.Local.sParam)
+			'set our boolean to True since we know we will have to reloa grid information
+			v.Local.bRePop.Set(True)
+			'call callwrapper to rescheduler
+			f.Global.General.CallWrapperSync(500030,v.Local.sParam)
+		
+		Function.Intrinsic.Control.Else 
+			'skip this job since we can't find it. 
+			f.Intrinsic.Debug.SetLA("JOB : ",v.Local.sWO(0).Trim," Suffix: ",v.Local.sWO(1).Trim," scheduling direction cant be determined. Skip...")
+		Function.Intrinsic.Control.EndIf
+		F.ODBC.conX!rst.Close
+	f.Intrinsic.Control.Next(v.Local.iC)
+	
+	f.Intrinsic.Control.If(v.Local.bRePop,=,True)
+		'repopulate data from tables and load grid 
+		f.Intrinsic.Control.CallSub(initial_load)
+	Function.Intrinsic.Control.EndIf
+	f.Intrinsic.Control.UnBlockEvents
+	f.Intrinsic.UI.CloseWaitDialog
+f.Intrinsic.Control.endif
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdRefresh_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	Function.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdReschedule_Click.End
+
+Program.Sub.BuildStyle.Start
+F.Intrinsic.Control.SetErrorHandler("BuildStyle_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.iC.Declare(Long)
+'columns include
+'0 Sched
+'1 Part
+'2 Loc
+'3 WO
+'4 Qty
+'5 Due Date
+'6 SO
+'7 QTY
+'8 Due Date
+'9 Qty Change
+'10 Date Change
+'11 Labor
+'12 OH
+'13 WO
+'14 Req
+
+gui.Form.fgData.Rows(1) 
+gui.Form.fgData.Rows(2) 
+Gui.Form.fgData.FixedRows(1)
+Gui.Form.fgData.Cols(15) 
+
+Gui.Form.fgData.SetColumnPercentages(".04:.13:.04:.07:.06:.07:.07:.06:.07:.06:.07:.07:.06:.06:.06")
+
+'Set Text Matrix of COlumn headers
+Gui.Form.fgData.TextMatrix(0,0,"Sched")
+Gui.Form.fgData.TextMatrix(1,0,"Part")
+Gui.Form.fgData.TextMatrix(2,0,"Loc")
+Gui.Form.fgData.TextMatrix(3,0,"WO")
+Gui.Form.fgData.TextMatrix(4,0,"Qty")
+Gui.Form.fgData.TextMatrix(5,0,"Due Date")
+Gui.Form.fgData.TextMatrix(6,0,"SO")
+Gui.Form.fgData.TextMatrix(7,0,"SO Qty")
+Gui.Form.fgData.TextMatrix(8,0,"Due Date")
+Gui.Form.fgData.TextMatrix(9,0,"Qty Change")
+Gui.Form.fgData.TextMatrix(10,0,"Date Change")
+Gui.Form.fgData.TextMatrix(11,0,"Labor")
+Gui.Form.fgData.TextMatrix(12,0,"OH")
+Gui.Form.fgData.TextMatrix(13,0,"WO")
+Gui.Form.fgData.TextMatrix(14,0,"Req")
+
+'Header Style
+F.Intrinsic.Control.For(v.Local.iC,0,14,1)
+	Gui.Form.fgData.BuildStyle(1,v.Local.iC,"Type","Locked",True)
+	Gui.Form.fgData.BuildStyle(1,v.Local.iC,"Fontstyle","Bold",True)
+	gui.Form.fgData.BuildStyle(1,v.Local.iC,"Format","Alignment",4)
+F.Intrinsic.Control.Next(v.Local.iC)
+
+Gui.Form.fgData.ApplyStyle(0,1)
+
+'build our records style 
+
+'Col 1
+Gui.Form.fgData.BuildStyle(2,0,"Type","Checkbox","")
+
+'Col 2 Alignment
+gui.Form.fgData.BuildStyle(2,1,"Format","Alignment",4)
+
+'Col 3
+gui.Form.fgData.BuildStyle(2,2,"Format","Alignment",4)
+
+'Col 4
+gui.Form.fgData.BuildStyle(2,3,"Format","Alignment",4)
+
+'col 7
+gui.Form.fgData.BuildStyle(2,6,"Format","Alignment",4)
+
+'col 11
+gui.Form.fgData.BuildStyle(2,11,"Format","Alignment",4)
+
+
+
+
+
+'build the rest. assuming locked
+F.Intrinsic.Control.For(v.Local.iC,1,14,1)
+	gui.Form.fgData.BuildStyle(2,v.Local.iC,"Type","Locked",True)
+F.Intrinsic.Control.Next(v.Local.iC)
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("BuildStyle_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	Function.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.BuildStyle.End
+
+Program.Sub.fgData_CheckClick.Start
+F.Intrinsic.Control.SetErrorHandler("fgData_CheckClick_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sRet.Declare(String) 
+v.Local.sRow.Declare(String)
+
+Function.Intrinsic.Control.BlockEvents
+
+f.Intrinsic.Control.If(v.Args.column, =,0) 
+	'read rows got to get key  data
+	gui.Form.fgData.ReadRow(v.Args.key,v.Local.sRow) 
+	f.Intrinsic.Control.If(v.Local.sRow.Trim,<>,"") 
+		f.Intrinsic.String.Split(v.Local.sRow,"*!*",v.Local.sRow) 
+		
+		'find out where we is in the udt. 
+		F.Intrinsic.Variable.UDTMultiSeek(v.uGlobal.uGrid!Order_NO,v.Local.sRow(6),v.uGlobal.uGrid!Part,v.Local.sRow(1),v.uGlobal.uGrid!WO,v.Local.sRow(3),v.Local.sRet)
+		 
+		'hope it's only one which it should be.... unless you cna have more than one part on a single sales order line? who knows..... .
+		
+		f.Intrinsic.Control.If(v.Local.sRet.Trim,<>,"") 
+			
+			f.Intrinsic.String.Split(v.Local.sRet.Trim,"*!*",v.Local.sRet) 
+			
+			f.Intrinsic.Control.If(v.Local.sRet.UBound,>,0) 
+				'this means we have an issue.
+				f.Intrinsic.Debug.SetLA("For some reason when we clicking in our checkbox we get returned multi values.....") 
+			f.Intrinsic.Control.EndIf
+			
+			'set our udt element checked status to the status of the row. 
+			v.uGlobal.uGrid(v.Local.sRet(0))!Sched.Set(v.Local.sRow(0))
+			
+		f.Intrinsic.Control.EndIf
+					
+	Function.Intrinsic.Control.EndIf
+Function.Intrinsic.Control.EndIf
+
+Function.Intrinsic.Control.UnBlockEvents
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("fgData_CheckClick_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	Function.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.fgData_CheckClick.End
+
+Program.Sub.fgData_MouseUp.Start
+F.Intrinsic.Control.SetErrorHandler("fgData_MouseUp_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sRow.Declare(string) 
+v.Local.sParam.Declare(String) 
+v.Local.iC.Declare(Long) 
+
+
+'here they can either click the part number (don't forget to read location) 
+'or they can click on the work order number values. 
+
+'Part brings up Supply and Demand 
+'WO brings up WO entry. 
+
+'Part Column and Loc 1,2
+
+'WO Column 3
+Function.Intrinsic.Control.BlockEvents
+
+'make sure our row is not 1
+F.Intrinsic.Control.if(v.Args.MouseRow,>=,1)	
+	F.Intrinsic.Control.SelectCase(v.Args.Mousecol) 
+	
+		f.Intrinsic.Control.Case(1) 
+		
+			'means that we are in Part 'get loc 
+			gui.Form.fgData.ReadRow(v.Args.MouseRow,v.Local.sRow)
+			f.Intrinsic.Control.If(v.Local.sRow.Trim,<>,"") 
+				f.Intrinsic.String.Split(v.Local.sRow,"*!*",v.Local.sRow)
+				'format params for callwrapper 300011 (S&D) passing ?Part!*!Loc!*!M?
+				F.Intrinsic.String.Build("{0}!*!{1}!*!M",v.Local.sRow(1),v.Local.sRow(2),v.Local.sParam)
+				f.Global.General.CallWrapperSync(300011,v.Local.sParam)
+			Function.Intrinsic.Control.EndIf
+			
+		F.Intrinsic.Control.Case(2)
+		
+			'if they clcik in loc column /shrug
+			'means that we are in loc column get part
+			gui.Form.fgData.ReadRow(v.Args.MouseRow,v.Local.sRow)
+			f.Intrinsic.Control.If(v.Local.sRow.Trim,<>,"") 
+				f.Intrinsic.String.Split(v.Local.sRow,"*!*",v.Local.sRow)
+				'format params for callwrapper 300011 (S&D) passing ?Part!*!Loc!*!M?
+				F.Intrinsic.String.Build("{0}!*!{1}!*!M",v.Local.sRow(1),v.Local.sRow(2),v.Local.sParam)
+				f.Global.General.CallWrapperSync(300011,v.Local.sParam)
+			Function.Intrinsic.Control.EndIf
+			
+		f.Intrinsic.Control.Case(3)
+			'means they clicked the work order number includes the suffix
+			'2009 (WO Entry) passing ?Job!*!Suffix!*!O?
+			' 3 element is where work order-suffix is stored
+			gui.Form.fgData.ReadRow(v.Args.MouseRow,v.Local.sRow)
+			Function.Intrinsic.Control.If(v.Local.sRow.Trim,<>,"") 
+				f.Intrinsic.String.Split(v.Local.sRow,"*!*",v.Local.srow) 
+				f.Intrinsic.Control.If(v.Local.sRow(3).Trim,<>,"") 
+					f.Intrinsic.String.Split(v.Local.sRow(3),"-",v.Local.sParam)
+					f.Intrinsic.String.Build("{0}!*!{1}!*!O",v.Local.sParam(0),v.Local.sParam(1),v.Local.sParam)
+					f.Global.General.CallWrapperSync(2009,v.Local.sParam)
+				Function.Intrinsic.Control.EndIf
+			Function.Intrinsic.Control.EndIf
+			
+		f.Intrinsic.Control.CaseElse
+			f.Intrinsic.Control.UnBlockEvents
+			f.Intrinsic.Control.ExitSub 
+	F.Intrinsic.Control.EndSelect
+F.Intrinsic.Control.EndIf
+
+Function.Intrinsic.Control.UnBlockEvents
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("fgData_MouseUp_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	Function.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.fgData_MouseUp.End
+
+Program.Sub.Initial_Load.Start
+F.Intrinsic.Control.SetErrorHandler("Initial_Load_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sSQL.Declare(String)
+V.Local.iCount.Declare(Long)
+V.Local.sOrder.Declare(String)
+V.Local.sRecord.Declare(String)
+V.Local.sPart.Declare(String)
+V.Local.sJob.Declare(String)
+
+'Clear out UDT
+V.uGlobal.uGrid.Redim(-1,-1)
+
+'Get all jobs in Job_Mult_Parts - UPDATED 1/17/2017 BY DLF - only include open work orders
+V.Local.sSQL.Set("SELECT JMP.JOB, JMP.SUFFIX, (JMP.QTY - JMP.CLOSED_QTY) AS QTY, JMP.PART, JMP.LOC FROM V_JOB_MULT_PARTS JMP RIGHT JOIN V_JOB_HEADER JH ON JMP.JOB = JH.JOB AND JMP.SUFFIX = JH.SUFFIX WHERE JH.DATE_CLOSED = '1900-01-01'")
+F.ODBC.Connection!conX.OpenLocalRecordsetRO("rstMult",V.Local.sSQL)
+
+F.Intrinsic.Control.DoUntil(V.ODBC.conX!rstMult.EOF,=,True)
+	V.Local.sOrder.Set("")
+	V.Local.sRecord.Set("")
+	V.Local.sJob.Set("")
+	V.Local.sPart.Set("")
+	
+	V.Local.sPart.Set(V.ODBC.conX!rstMult.FieldValTrim!PART)
+
+	'Get information from inventory, if non-inventory part skip
+	F.Intrinsic.String.Build("SELECT PART, LOCATION, QTY_ONHAND, QTY_ONORDER_WO, QTY_REQUIRED FROM V_INVENTORY_MSTR WHERE PART = '{0}' AND LOCATION = '{1}' AND QTY_ONORDER_WO <> 0",V.Local.sPart.PSQLFriendly,V.ODBC.conX!rstMult.FieldValTrim!LOC,V.Local.sSQL)
+	F.ODBC.Connection!conX.OpenLocalRecordsetRO("rstPart",V.Local.sSQL)
+	
+	F.Intrinsic.Control.If(V.ODBC.conX!rstPart.EOF,<>,True)
+		'Update UDT size
+		F.Intrinsic.Control.If(V.uGlobal.uGrid.UBound,=,-1)
+			V.uGlobal.uGrid.Redim(0,V.Local.iCount)
+		F.Intrinsic.Control.Else
+			V.uGlobal.uGrid.RedimPreserve(0,V.Local.iCount)
+		F.Intrinsic.Control.EndIf
+		'We are going to add this record to the UDT since the rest of the information should be there that is needed.
+		'Get the Job information
+		F.Intrinsic.String.Build("SELECT SCHEDULED_DUE_DATE, SALES_ORDER, IF(NUM_HOURS <> 0, 'YES', 'NO') AS LABOR FROM V_JOB_HEADER WHERE JOB = '{0}' AND SUFFIX = '{1}'",V.ODBC.conX!rstMult.FieldValTrim!JOB,V.ODBC.conX!rstMult.FieldValTrim!SUFFIX,V.Local.sSQL)
+		F.ODBC.Connection!conX.OpenLocalRecordsetRO("rstJob",V.Local.sSQL)
+		
+		F.Intrinsic.Control.If(V.ODBC.conX!rstJob.EOF,<>,True)
+			'Get the Order information
+			F.Intrinsic.String.Build("SELECT ({0} - QTY_BO) AS QTY_CHANGED, LEFT(RECORD_NO,3) AS RECORD_NO, DATE_ITEM_PROM FROM V_ORDER_LINES WHERE ORDER_NO = '{1}' AND PART = '{2}' AND LOCATION = '{3}'",V.ODBC.conX!rstMult.FieldVal!QTY,V.ODBC.conX!rstJob.FieldValTrim!SALES_ORDER,V.Local.sPart,V.ODBC.conX!rstMult.FieldValTrim!LOC,V.Local.sSQL)
+			F.ODBC.Connection!conX.OpenLocalRecordsetRO("rstOrder",V.Local.sSQL)
+		
+			F.Intrinsic.Control.If(V.ODBC.conX!rstOrder.EOF,<>,True)
+				V.uGlobal.uGrid(V.Local.iCount)!Qty_Change.Set(V.ODBC.conX!rstOrder.FieldValTrim!QTY_CHANGED)
+				V.Local.sRecord.Set(V.ODBC.conX!rstOrder.FieldValTrim!RECORD_NO)
+				V.uGlobal.uGrid(V.Local.iCount)!Date_Item_Prom.Set(V.ODBC.conX!rstOrder.FieldVal!DATE_ITEM_PROM)
+				V.Local.sOrder.Set(V.ODBC.conX!rstJob.FieldValTrim!SALES_ORDER)
+				'Build Order Number String
+				F.Intrinsic.String.Build("{0}-{1}",V.Local.sOrder,V.Local.sRecord,V.Local.sOrder)
+				V.uGlobal.uGrid(V.Local.iCount)!Order_NO.Set(V.Local.sOrder)
+			F.Intrinsic.Control.EndIf
+			
+			F.ODBC.conX!rstOrder.Close			
+			'Set job information
+			V.uGlobal.uGrid(V.Local.iCount)!Date_Due.Set(V.ODBC.conX!rstJob.FieldVal!SCHEDULED_DUE_DATE)
+			V.uGlobal.uGrid(V.Local.iCount)!Labor.Set(V.ODBC.conX!rstJob.FieldVal!LABOR)
+		F.Intrinsic.Control.EndIf
+		
+		F.ODBC.conX!rstJob.Close
+		
+		'We can add the rest of the information now. Don't want to add anything if inventory doesn't exist.
+		V.uGlobal.uGrid(V.Local.iCount)!Part.Set(V.Local.sPart.Trim)
+		V.uGlobal.uGrid(V.Local.iCount)!Location.Set(V.ODBC.conX!rstPart.FieldValTrim!Location)
+		V.uGlobal.uGrid(V.Local.iCount)!Qty_OnHand.Set(V.ODBC.conX!rstPart.FieldVal!QTY_ONHAND)
+		V.uGlobal.uGrid(V.Local.iCount)!Qty_OnOrder_WO.Set(V.ODBC.conX!rstPart.FieldVal!QTY_ONORDER_WO)
+		V.uGlobal.uGrid(V.Local.iCount)!Qty_Required.Set(V.ODBC.conX!rstPart.FieldValTrim!QTY_ReQUIRED)
+		'Build WO String
+		F.Intrinsic.String.Build("{0}-{1}",V.ODBC.conX!rstMult.FieldValTrim!JOB,V.ODBC.conX!rstMult.FieldValTrim!SUFFIX,V.Local.sJob)
+		V.uGlobal.uGrid(V.Local.iCount)!WO.Set(V.Local.sJob)
+		V.uGlobal.uGrid(V.Local.iCount)!Qty.Set(V.ODBC.conX!rstMult.FieldVal!QTY)
+		
+		'Update count
+		F.Intrinsic.Math.Add(V.Local.iCount,1,V.Local.iCount)
+	F.Intrinsic.Control.EndIf
+	
+	F.ODBC.conX!rstPart.Close
+	F.ODBC.conX!rstMult.MoveNext
+F.Intrinsic.Control.Loop
+
+F.ODBC.conX!rstMult.Close
+
+'load information into our grid from our udt. 
+Gui.Form.fgData.Visible(False) 
+'default checked to zero if not already done so.
+f.Intrinsic.Variable.UDTSetMemberValue(v.uGlobal.uGrid!Sched,"0")
+Gui.Form.fgData.LoadFromUDT("v.uglobal.uGrid","Sched::0*!*Part::1*!*Location::2*!*WO::3*!*QTY::4*!*Date_DUE::5*!*ORDER_NO::6*!*QTY_BO::7*!*Date_Item_PROM::8*!*QTY_CHANGE::9*!*Date_Change::10*!*Labor::11*!*Qty_ONHAND::12*!*QTY_ONORDER_WO::13*!*QTY_REQUIRED::14",2) 
+gui.Form.fgData.Visible(True)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Initial_Load_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	Function.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Initial_Load.End
+
+Program.Sub.cmdExport_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdReschedule_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sFilename.Declare(String)
+v.Local.sPath.Declare(String)
+
+f.Intrinsic.String.Concat("Multi-Part Work Order Action Required",".xlsx",v.Local.sFilename)
+f.Intrinsic.String.Concat(v.Caller.TempDir,"\",v.Local.sFilename,v.Local.sPath)
+
+'Gui.Formname.Flexgridname.Export(v.Local.sPath, Mode) or
+'Gui.Formname.Flexgridname.Export(Filename, Mode, Column List)
+
+gui.Form.fgData.Export(v.Local.sPath,"1")
+F.Intrinsic.Task.ShellExec(0,"",V.Local.sPath,"","",1)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdReschedule_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3817_WO_Action_Req_MultiParts.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdExport_Click.End
+
+Program.Sub.Comments.Start
+${$0$}$GCG_3817_WO_Action_Req_MultiParts$}$TRT$}$11/5/2016 8:44:18 PM$}$False
+${$2$}$$}$$}$1$}$0$}$$}$5/13/2016 10:49:50 AM$}$500030,300011,2009
+${$3$}$0$}$$}$0$}$-1$}$$}$12:00:00 AM$}$Quote 7778
+TRT
+5/11/16
+
+This program will be a dashboard similar to Work Order Action Required but it will work with jobs that use Multi Part. You will have the ability to filter the results by how many days over the Work Order Due date the Sales order Due date can be. All jobs and sales order that are above and below the specified amount of days will be shown as well as any job that does not have enough quantity to meet the sales order.
+Program.Sub.Comments.End
